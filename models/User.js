@@ -14,10 +14,10 @@ const UserSchema = new Schema({
         date:{
             type: Date
         },
-        meal:{
+        meal:[{
             type:Schema.Types.ObjectId,
             ref:'Meal'
-        }
+        }]
     }]
 });
 
