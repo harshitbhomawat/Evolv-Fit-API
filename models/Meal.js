@@ -11,8 +11,15 @@ const MealSchema = new Schema({
         required:true
     },
     food_items:[{
+        food_item:{
         type:Schema.Types.ObjectId,
-        ref:'FoodItem'
+        ref:'FoodItem',
+        required:true
+        },
+        quantity:{
+            type:Number,
+            required:true
+        }
     }]
 });
 
