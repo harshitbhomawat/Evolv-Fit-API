@@ -44,8 +44,6 @@ router.patch('/remove_item_from_meal/:id',(req,res,next)=>{
     .catch(next);
 });
 
-
-
 router.get('/users',(req,res,next)=>{
     User.find({})
     .then((data)=> res.json(data))
@@ -83,17 +81,40 @@ router.post('/create_meal_by_calories',(req,res,next)=>{
             return ((1.0)*b.protein)/b.calories - ((1.0)*a.protein)/a.calories;
         });
         var calories=0,protein=0;
-        const added_items=[{food_item:food_items[0],quantity:1}
-        ,{food_item:food_items[1],quantity:1}
-        ,{food_item:food_items[2],quantity:1}];
-        calories+=food_items[0].calories+food_items[1].calories+food_items[2].calories;
-        protein+=food_items[0].protein+food_items[1].protein+food_items[2].protein;
+        // const added_items=[{food_item:food_items[0],quantity:1}
+        // ,{food_item:food_items[1],quantity:1}
+        // ,{food_item:food_items[2],quantity:1}];
+        // calories+=food_items[0].calories+food_items[1].calories+food_items[2].calories;
+        // protein+=food_items[0].protein+food_items[1].protein+food_items[2].protein;
+
+        var added_items=[];
+        const variety=Number(req.body.variety);
+        const exclude_food_items = req.body.exclude_food_items;
+        // console.log(food_items[0]._id == exclude_food_items[0]);
+        // console.log(exclude_food_items.includes(food_items[0]._id.toString()));
+        // res.sendStatus(200);
         var i=0;
+        while(i<food_items.length && added_items.length<variety){
+            if(exclude_food_items.includes(food_items[i]._id.toString())){
+                i+=1;
+            }
+            else{
+                added_items.push({
+                    food_item:food_items[i],
+                    quantity:1
+                });
+                calories+=food_items[i].calories;
+                protein+=food_items[i].protein;
+                i+=1;
+            }
+        }
+
+        i=0;
         while(calories<req_calories-100){
             added_items[i].quantity+=1;
             calories+=added_items[i].food_item.calories;
             protein+=added_items[i].food_item.protein;
-            i=(i+1)%3;
+            i=(i+1)%variety;
         }
         const meal = new Meal();
         meal.category = req.body.category;
